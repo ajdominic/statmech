@@ -8,3 +8,10 @@ for k in range(configs):
     array_temp = np.array(temp, float)
     reshaped = np.reshape(array_temp, (3, 3))
     spin_tensor[:, :, k] = np.where(reshaped == 0, -1, reshaped)
+
+def list_to_array(some_list, dim):
+    length = len(some_list)
+    temp = []
+    for i in some_list:
+        i.split()  
+    array = np.zeros()
