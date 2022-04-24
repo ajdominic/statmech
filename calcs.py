@@ -203,3 +203,50 @@ def rndN(N):
     val2 = random.randint(0, N)
 
     return val1, val2
+
+
+def binning(x, pwr):
+    """
+    This function bins handles the binning portion
+    to compute the standard deviation.
+    """
+    N = x.shape[0]
+    r = N // pwr
+    xbin = np.zeros((r,))
+
+    for i in range(r):
+        for j in range(pwr):
+            xbin[i] += x[i*pwr + j]
+        xbin[i] /= pwr
+
+    return np.std(xbin)
+
+def TvM(mag=0.0):
+    """
+    This function produces the code needed to plot M as a function of T
+    for various values of H. The value H is the parameter that is taken
+    in here.
+    """
+    #T_array = np.arange(0.1, 8.0, 0.1)
+    T_array = np.array([0.1, 0.5, 1.0, 1.5, 2.0,
+                        2.5, 3.0, 3.5, 5.0, 8.0])
+
+    # initialize arrays
+    E_list = []
+    M_list = []
+
+    # loop over stuff
+    for k in range(T_array.shape[0]):
+        Tmp = T_array[k]
+        params = {"dim":3, "kb":1.0, "Temperature":Tmp,
+                  "J":1.0, "H":mag, "n_iter":10000, 
+                  "matrix":False}
+        E, M = MCMC(params)
+
+        # make calculations
+        avg_E = np.sum(E) / E.shape[0]
+        avg_M = np.sum(M) / M.shape[0]
+        E_list.append(avg_E)
+        M_list.append(avg_M)
+
+    return T_array, np.array(E_list), np.array(M_list)
