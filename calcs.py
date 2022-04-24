@@ -180,6 +180,20 @@ def rnd():
         return 1
 
 
+def rnd_lattice(N):
+    """
+    This function creates a NxN lattice with entries that are
+    either 1 or -1. These entries are randomly selected using
+    the rnd() function (created above).
+    """
+    lattice = np.zeros([N, N], float)
+    for i in range(N):
+        for j in range(N):
+            lattice[i, j] = rnd()
+
+    return lattice
+
+
 def rndN(N):
     """
     This function returns two random integers i and j that are
