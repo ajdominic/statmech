@@ -30,19 +30,21 @@ def create_lattices(dim=3):
     return spin_tensor
 
 
-def hammy(J, H, lattice):
+def hammy(J, H, lat):
     """
     This function computes the total energy
     of the given lattice.
     """
-    dim = lattice.shape[0]
+    dim = lat.shape[0]
     nn_sum = 0.0
     for j in range(dim):
         for k in range(dim):
-            nn_sum = nn(lattice, j, k)
+            # get the nearest neighbor summation
+            nn_sum += lat[j, k] * (lat[(j-1)%dim, k] + lat[(j+1)%dim, k]
+                                   + lat[j, (k+1)%dim] + lat[j, (k-1)%dim]) / 2.0
 
     term1 = - J * nn_sum
-    term2 = - H * np.sum(lattice)
+    term2 = - H * np.sum(lat)
 
     return term1 + term2
 
@@ -55,12 +57,12 @@ def nn(lat, r, c):
     spin = lat[r, c]
 
     # get the spins of the neighbors above and below
-    up = lat[r-1, c]
+    up = lat[(r-1)%dim, c]
     down = lat[(r+1)%dim, c]
 
     # get the spins of the right and left neighbors
     right = lat[r, (c+1)%dim]
-    left = lat[r, c-1]
+    left = lat[r, (c-1)%dim]
 
     # return the sum
     total = spin * (up + down + left + right)
@@ -108,6 +110,10 @@ def onsager(J, kb=1.0, lb=0.5, ub=50.0, dT=0.5):
 
 
 def plt_onsager(T, E):
+    """
+    This function plots the Onsager solution as a function of temperature
+    and saves the output.
+    """
     plt.figure(0, figsize=(7, 5))
     plt.plot(T, E, c="black", ls="-.", lw=3)
     plt.yticks(np.arange(-2.0, 0.1, 1.0), fontsize=14)
