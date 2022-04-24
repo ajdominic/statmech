@@ -178,3 +178,14 @@ def rnd():
 
     else: 
         return 1
+
+
+def rndN(N):
+    """
+    This function returns two random integers i and j that are
+    between 0 and N.
+    """
+    val1 = random.randint(0, N)
+    val2 = random.randint(0, N)
+
+    return val1, val2
