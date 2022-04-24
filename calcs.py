@@ -107,6 +107,17 @@ def onsager(J, kb=1.0, lb=0.5, ub=50.0, dT=0.5):
     return T_array, E_array
 
 
+def plt_onsager(T, E):
+    plt.figure(0, figsize=(7, 5))
+    plt.plot(T, E, c="black", ls="-.", lw=3)
+    plt.yticks(np.arange(-2.0, 0.1, 1.0), fontsize=14)
+    plt.xticks(np.arange(0.0, 51.0, 25), fontsize=14)
+    plt.xlabel("Temperature", fontsize=14)
+    plt.ylabel("Internal energy per particle", fontsize=14)
+    plt.savefig("onsager_exact.pdf")
+    plt.show()
+
+
 def is_in(item, array):
     """
     This function returns true if the given item is in the
