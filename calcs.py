@@ -40,13 +40,46 @@ def hammy(J, H, lat):
     for j in range(dim):
         for k in range(dim):
             # get the nearest neighbor summation
-            nn_sum += lat[j, k] * (lat[(j-1)%dim, k] + lat[(j+1)%dim, k]
-                                   + lat[j, (k+1)%dim] + lat[j, (k-1)%dim]) / 2.0
+            nn_sum += lat[j, k] * (lat[(j-1)%dim, k]
+                                   + lat[(j+1)%dim, k]
+                                   + lat[j, (k+1)%dim]
+                                   + lat[j, (k-1)%dim]) / 2.0
 
     term1 = - J * nn_sum
     term2 = - H * np.sum(lat)
 
     return term1 + term2
+
+
+def get_Q_and_E(T, J, H, lattices, configs=512):
+    """
+    This function computes the partition function and the
+    average energy.
+    """
+    Q = 0.0
+    avg_E = 0.0
+    ham = np.zeros(configs, float)
+
+    # looping over each configuration
+    for k in range(configs):
+
+        # get a particular lattice
+        lattice = lattices[:, :, k]
+
+        # calculate the energy
+        ham[k] = hammy(J, H, lattice)
+
+        # compute the Boltzman factors
+        exp = np.exp(- ham[k] / T)
+
+        # compute the average energies
+        avg_E += ham[k] * exp
+
+        # compute the partition functions
+        Q += exp
+
+    avg_E /= Q
+    return Q, avg_E
 
 
 def f1(theta, T, J, kb=1.0):
