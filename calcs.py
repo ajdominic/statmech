@@ -51,7 +51,7 @@ def hammy(J, H, lat):
     return term1 + term2
 
 
-def get_Q_and_E(T, J, H, lattices, configs=512):
+def get_Q_and_E(T, J, H, lattices, per_part=False, configs=512):
     """
     This function computes the partition function and the
     average energy.
@@ -79,6 +79,11 @@ def get_Q_and_E(T, J, H, lattices, configs=512):
         Q += exp
 
     avg_E /= Q
+
+    # divide by 9 to get the energy per particle
+    if (per_part is True):
+        avg_E /= float(np.log2(configs))
+
     return Q, avg_E
 
 
@@ -121,18 +126,26 @@ def onsager(J, kb=1.0, lb=0.5, ub=50.0, dT=0.5):
     return T_array, E_array
 
 
-def plt_onsager(T, E):
+def plt_onsager(T, E_list, save):
     """
     This function plots the Onsager solution as a function of temperature
     and saves the output.
     """
     plt.figure(0, figsize=(7, 5))
-    plt.plot(T, E, c="black", ls="-.", lw=3)
+
+    ctr = 0
+    clrs = ["black", "royalblue", "firebrick"]
+    lines = ["-", "-."]
+    lbls = ["Onsager", "3x3 Model"]
+    for k in E_list:
+        plt.plot(T, k, c=clrs[ctr], ls=lines[ctr], lw=3, label=lbls[ctr])
+        ctr += 1
     plt.yticks(np.arange(-2.0, 0.1, 1.0), fontsize=14)
     plt.xticks(np.arange(0.0, 51.0, 25), fontsize=14)
     plt.xlabel("Temperature", fontsize=14)
     plt.ylabel("Internal energy per particle", fontsize=14)
-    plt.savefig("onsager_exact.pdf")
+    plt.legend(loc="lower right", borderpad=1.2, handlelength=3.0)
+    plt.savefig(save)
     plt.show()
 
 
@@ -148,3 +161,31 @@ def is_in(item, array):
             value = True
         ctr += 1
     return value
+
+
+def rnd():
+    """
+    This function randomly returns either +1 or -1 by drawing a
+    random number between 0 and 1 and multiplying it by 10. This
+    number is then type casted to an integer. It's remainder
+    modulo 2 is returned. However, rather than returning 0 or 1,
+    I have included an if/else statement to return -1 or 1.
+    """
+    val = int(random.uniform(0, 1) * 10) % 2
+
+    if val == 0:
+        return -1
+
+    else: 
+        return 1
+
+
+def rndN(N):
+    """
+    This function returns two random integers i and j that are
+    between 0 and N.
+    """
+    val1 = random.randint(0, N)
+    val2 = random.randint(0, N)
+
+    return val1, val2
