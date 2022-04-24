@@ -49,27 +49,6 @@ def hammy(J, H, lat):
     return term1 + term2
 
 
-def nn(lat, r, c):
-    # the number of rows/columns in the lattice
-    dim = int(lat.shape[0])
-
-    # the spin at a given index in the lattice
-    spin = lat[r, c]
-
-    # get the spins of the neighbors above and below
-    up = lat[(r-1)%dim, c]
-    down = lat[(r+1)%dim, c]
-
-    # get the spins of the right and left neighbors
-    right = lat[r, (c+1)%dim]
-    left = lat[r, (c-1)%dim]
-
-    # return the sum
-    total = spin * (up + down + left + right)
-
-    return total
-
-
 def f1(theta, T, J, kb=1.0):
     """
     This function computes the integrand in subproject 2,
