@@ -15,3 +15,28 @@ def list_to_array(some_list, dim):
     for i in some_list:
         i.split()  
     array = np.zeros()
+
+
+def nn(lat, r, c):
+    """
+    This function calculates the nearest neighbor sum
+    in the Hamiltonian.
+    """
+    # the number of rows/columns in the lattice
+    dim = int(lat.shape[0])
+
+    # the spin at a given index in the lattice
+    spin = lat[r, c]
+
+    # get the spins of the neighbors above and below
+    up = lat[(r-1)%dim, c]
+    down = lat[(r+1)%dim, c]
+
+    # get the spins of the right and left neighbors
+    right = lat[r, (c+1)%dim]
+    left = lat[r, (c-1)%dim]
+
+    # return the sum
+    total = spin * (up + down + left + right)
+
+    return total
