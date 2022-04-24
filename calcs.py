@@ -161,3 +161,20 @@ def is_in(item, array):
             value = True
         ctr += 1
     return value
+
+
+def rnd():
+    """
+    This function randomly returns either +1 or -1 by drawing a
+    random number between 0 and 1 and multiplying it by 10. This
+    number is then type casted to an integer. It's remainder
+    modulo 2 is returned. However, rather than returning 0 or 1,
+    I have included an if/else statement to return -1 or 1.
+    """
+    val = int(random.uniform(0, 1) * 10) % 2
+
+    if val == 0:
+        return -1
+
+    else: 
+        return 1
