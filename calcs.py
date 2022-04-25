@@ -145,7 +145,7 @@ def plt_onsager(T, E_list, save):
     plt.xlabel("Temperature", fontsize=14)
     plt.ylabel("Internal energy per particle", fontsize=14)
     plt.legend(loc="lower right", borderpad=1.2, handlelength=3.0)
-    plt.savefig(save)
+    #plt.savefig(save)
     plt.show()
 
 
@@ -180,6 +180,20 @@ def rnd():
         return 1
 
 
+def rnd_lattice(N):
+    """
+    This function creates a NxN lattice with entries that are
+    either 1 or -1. These entries are randomly selected using
+    the rnd() function (created above).
+    """
+    lattice = np.zeros([N, N], float)
+    for i in range(N):
+        for j in range(N):
+            lattice[i, j] = rnd()
+
+    return lattice
+
+
 def rndN(N):
     """
     This function returns two random integers i and j that are
@@ -189,3 +203,129 @@ def rndN(N):
     val2 = random.randint(0, N)
 
     return val1, val2
+
+
+def MCMC(params):
+    """
+    This function computes the Markov Chain Monte Carlo
+    algorithm based on an input dictionary.
+    """
+    # unpack the dictionary
+    dim, kb, Temp, J, H, n_iter, matrix = params.values()
+    configs = 2**(dim * dim)
+    beta = 1.0 / (kb * Temp)
+    J *= kb
+    # H = 0.0
+
+    # create the empty lists
+    E_bar = []
+    M_bar = []
+
+    # get initial lattice and create a copy
+    if matrix is False:
+        lattices = create_lattices()
+        init_indx = rndN(configs)[0]
+        x1 = lattices[:, :, init_indx]
+        assert(lattices.shape[0] is dim)
+
+    # gets the lattice with all spins pointing up
+    elif matrix is True:
+        lattices = create_lattices()
+        x1 = lattices[:, :, -1]
+
+    # initializes based on a lattice passed to the function
+    else:
+        x1 = np.copy(matrix)
+    
+    # computes the MCMC algorithm
+    for k in range(n_iter):
+
+        # create a copy of the lattice
+        x2 = np.copy(x1)
+
+        # select random spin
+        i, j = rndN(dim-1)
+        x2[i, j] *= -1.0
+
+        # get the hammies
+        x1_ham = hammy(J, H, x1)
+        x2_ham = hammy(J, H, x2)
+
+        # random number between 0 and 1
+        u = random.uniform(0, 1)
+        temp = -beta * (x2_ham - x1_ham)
+        val = np.exp(temp)
+
+        if (u < val):
+            # retain c'
+            mag = np.sum(x2)
+            E_bar.append(x2_ham)
+            M_bar.append(mag)
+            x1 = np.copy(x2)
+
+        else:
+            # retain c
+            mag = np.sum(x1)
+            E_bar.append(x1_ham)
+            M_bar.append(mag)
+
+    return np.array(E_bar), np.array(M_bar)
+
+
+def binning(x, pwr):
+    """
+    This function bins handles the binning portion
+    to compute the standard deviation.
+    """
+    N = x.shape[0]
+    r = N // pwr
+    xbin = np.zeros((r,))
+
+    for i in range(r):
+        for j in range(pwr):
+            xbin[i] += x[i*pwr + j]
+        xbin[i] /= pwr
+
+    return np.std(xbin)
+
+
+def pltBins(x, y, save):
+    plt.figure(0, figsize=(7, 5))
+    plt.plot(x, y, "-o", c="black", label="std dev")
+    plt.xlabel("Bin Size", fontsize=10)
+    plt.ylabel("$\sigma$", rotation=0, labelpad=10, fontsize=15)
+    plt.legend(loc="lower right")
+    #plt.savefig(save)
+    plt.show()
+
+
+def TvM(mag=0.0):
+    """
+    This function produces the code needed to plot M as a function of T
+    for various values of H. The value H is the parameter that is taken
+    in here.
+    """
+    #T_array = np.arange(0.1, 8.0, 0.1)
+    T_array = np.array([0.1, 0.5, 1.0, 1.5, 2.0,
+                        2.5, 3.0, 3.5, 5.0, 8.0])
+    matrix = np.ones([10, 10], float)
+
+    # initialize arrays
+    E_list = []
+    M_list = []
+
+    # loop over stuff
+    for k in range(T_array.shape[0]):
+        Tmp = T_array[k]
+        params = {"dim":10, "kb":1.0, "Temperature":Tmp,
+                  "J":1.0, "H":mag, "n_iter":1000, 
+                  "matrix":matrix}
+        E, M = MCMC(params)
+
+        # make calculations
+        avg_E = np.sum(E) / E.shape[0]
+        avg_M = np.sum(M) / M.shape[0]
+        E_list.append(avg_E)
+        M_list.append(avg_M)
+
+    return T_array, np.array(E_list), np.array(M_list)
