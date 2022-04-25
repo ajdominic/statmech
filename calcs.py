@@ -297,3 +297,35 @@ def pltBins(x, y, save):
     plt.legend(loc="lower right")
     plt.savefig(save)
     plt.show()
+
+
+def TvM(mag=0.0):
+    """
+    This function produces the code needed to plot M as a function of T
+    for various values of H. The value H is the parameter that is taken
+    in here.
+    """
+    #T_array = np.arange(0.1, 8.0, 0.1)
+    T_array = np.array([0.1, 0.5, 1.0, 1.5, 2.0,
+                        2.5, 3.0, 3.5, 5.0, 8.0])
+    matrix = np.ones([10, 10], float)
+
+    # initialize arrays
+    E_list = []
+    M_list = []
+
+    # loop over stuff
+    for k in range(T_array.shape[0]):
+        Tmp = T_array[k]
+        params = {"dim":10, "kb":1.0, "Temperature":Tmp,
+                  "J":1.0, "H":mag, "n_iter":1000, 
+                  "matrix":matrix}
+        E, M = MCMC(params)
+
+        # make calculations
+        avg_E = np.sum(E) / E.shape[0]
+        avg_M = np.sum(M) / M.shape[0]
+        E_list.append(avg_E)
+        M_list.append(avg_M)
+
+    return T_array, np.array(E_list), np.array(M_list)
