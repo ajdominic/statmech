@@ -145,7 +145,7 @@ def plt_onsager(T, E_list, save):
     plt.xlabel("Temperature", fontsize=14)
     plt.ylabel("Internal energy per particle", fontsize=14)
     plt.legend(loc="lower right", borderpad=1.2, handlelength=3.0)
-    plt.savefig(save)
+    #plt.savefig(save)
     plt.show()
 
 
@@ -215,7 +215,7 @@ def MCMC(params):
     configs = 2**(dim * dim)
     beta = 1.0 / (kb * Temp)
     J *= kb
-    H = 0.0
+    # H = 0.0
 
     # create the empty lists
     E_bar = []
@@ -295,7 +295,7 @@ def pltBins(x, y, save):
     plt.xlabel("Bin Size", fontsize=10)
     plt.ylabel("$\sigma$", rotation=0, labelpad=10, fontsize=15)
     plt.legend(loc="lower right")
-    plt.savefig(save)
+    #plt.savefig(save)
     plt.show()
 
 
