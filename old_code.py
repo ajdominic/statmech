@@ -40,37 +40,3 @@ def nn(lat, r, c):
     total = spin * (up + down + left + right)
 
     return total
-
-"""
-J, H = 1.0, 0.0
-lo_T, hi_T = 0.1, 1000.0
-Q_lo_T = 0.0
-Q_hi_T = 0.0
-avg_lo = 0.0
-avg_hi = 0.0
-ham = np.zeros(configs, float)
-
-# looping over each configuration
-for k in range(configs):
-
-    # get a particular lattice
-    lattice = lattices[:, :, k]
-
-    # calculate the energy
-    ham[k] = c.hammy(J, H, lattice)
-
-    # compute the Boltzman factors
-    lo_exp = np.exp(- ham / lo_T)
-    hi_exp = np.exp(- ham / hi_T)
-
-    # compute the average energies
-    avg_lo += ham * lo_exp
-    avg_hi += ham * hi_exp
-
-    # compute the partition functions
-    Q_lo_T += lo_exp
-    Q_hi_T += hi_exp
-
-avg_lo /= Q_lo_T
-avg_hi /= Q_hi_T
-"""
